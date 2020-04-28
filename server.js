@@ -21,10 +21,15 @@ app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ limit: '10mb', extended: false }))
 
 const mongoose = require('mongoose')
-mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true })
-const db = mongoose.connection
-db.on('error', error => console.error(error))
-db.once('open', () => console.log('Connected to Mongoose'))
+var database=process.env.MONGODB_URI || "mongodb://localhost:27017/blogdb";
+// connecting to db
+mongoose.connect(database, {useNewUrlParser: true,useUnifiedTopology: true});
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log('Connected to mongodb');
+});
 
 app.use('/', indexRouter)
 app.use('/authors', authorRouter)
